@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s inherit_errexit 2>/dev/null || true
+
+[[ -z ${ASDF_INSTALL_TYPE+x} ]] && echo "ASDF_INSTALL_TYPE is required" && exit 1
+[[ -z ${ASDF_INSTALL_VERSION+x} ]] && echo "ASDF_INSTALL_VERSION is required" && exit 1
+[[ -z ${ASDF_DOWNLOAD_PATH+x} ]] && echo "ASDF_DOWNLOAD_PATH is required" && exit 1
+
+function download() {
+	local install_type=$1
+	[[ ${install_type} != "version" ]] && echo "install type, ${install_type}, is not supported" && exit 1
+
+	local version=$2
+	local download_path=$3
+
+	local repo="aslafy-z/helm-git"
+	local tag="v${version}"
+
+	echo "Cloning ${repo} at ${tag} into ${download_path}"
+	git clone --branch "${tag}" --depth 1 "https://github.com/${repo}" "${download_path}"
+}
+
+download "${ASDF_INSTALL_TYPE}" "${ASDF_INSTALL_VERSION}" "${ASDF_DOWNLOAD_PATH}"
